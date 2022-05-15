@@ -1,1 +1,4 @@
 # local-descent
+
+## LINE SEARCH
+## APPROXIMATE LINE SEARCH
