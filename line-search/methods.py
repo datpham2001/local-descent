@@ -1,0 +1,24 @@
+from utils import *
+from definitions import *
+
+class Method():
+  def __init__(self, objective_init, gradient_init, point_init, direction_init):
+    self.objective = objective_init
+    self.gradient = gradient_init
+    self.point = point_init
+    self.direction = direction_init
+  
+  def Armijo(self):
+    self.result = line_search_armijo(self.objective, self.point, self.direction, self.gradient(self.point))
+    self.alpha = self.result[0]
+    
+    print('Alpha: %.3f' % self.alpha)
+    print('Function evaluations: %d' % self.result[1])
+    
+    # define objective function minima
+    end = self.point + self.alpha * self.direction
+    # evaluate objective function minima
+    print('f(end) = f(%.3f) = %.3f' % (end, self.objective(end)))
+    
+    #visualize 
+    visualize(self.objective, self.point, end)
