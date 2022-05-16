@@ -33,8 +33,8 @@ class Method():
     #print and visualize the result
     self.print_out()
   
-  def Wolfe2(self):
-    self.result = line_search_wolfe2(self.objective, self.gradient, self.point, self.direction)
+  def bracket_minimum(self):
+    self.result = line_search(self.objective, self.point, self.direction)
     self.alpha = self.result[0]
     
     #print and visualize the result
