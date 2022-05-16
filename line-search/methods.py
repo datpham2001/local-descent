@@ -8,17 +8,34 @@ class Method():
     self.point = point_init
     self.direction = direction_init
   
+  def print_out(self):
+    print(f'Alpha: {self.alpha}')
+    print(f'Function evaluations: {self.result[1]}')
+    # define objective function minima
+    end = self.point + self.alpha * self.direction
+    # evaluate objective function minima
+    print(f'f(end) = f({end}) = {objective(end)}')
+    #visualize 
+    visualize(self.objective, self.point, end)
+    
   def Armijo(self):
     self.result = line_search_armijo(self.objective, self.point, self.direction, self.gradient(self.point))
     self.alpha = self.result[0]
     
-    print('Alpha: %.3f' % self.alpha)
-    print('Function evaluations: %d' % self.result[1])
+    #print and visualize the result
+    self.print_out()
     
-    # define objective function minima
-    end = self.point + self.alpha * self.direction
-    # evaluate objective function minima
-    print('f(end) = f(%.3f) = %.3f' % (end, self.objective(end)))
     
-    #visualize 
-    visualize(self.objective, self.point, end)
+  def Wolfe1(self):
+    self.result = line_search_wolfe1(self.objective, self.gradient, self.point, self.direction)
+    self.alpha = self.result[0]
+    
+    #print and visualize the result
+    self.print_out()
+  
+  def Wolfe2(self):
+    self.result = line_search_wolfe2(self.objective, self.gradient, self.point, self.direction)
+    self.alpha = self.result[0]
+    
+    #print and visualize the result
+    self.print_out()
