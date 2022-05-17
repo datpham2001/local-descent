@@ -4,31 +4,9 @@ import scipy.optimize as opt
 from scipy.optimize import _minpack2 as minpack2
 
 
-#------------------------------------------------------------------------------
 # Armijo line and scalar searches
-#------------------------------------------------------------------------------
-
 def line_search_armijo(f, xk, pk, gfk, old_fval = None, args=(), c1=1e-4, alpha0=1):
-    '''Parameters
-    ----------
-    f : Function to be minimized.
-    xk : Current point.
-    pk : Search direction.
-    gfk : Gradient of `f` at point `xk`.
-    old_fval : float
-        Value of `f` at point `xk`.
-    args : tuple, optional
-        Optional arguments.
-    c1 : float, optional
-        Value to control stopping criterion.
-    alpha0 : scalar, optional
-        Value of `alpha` at start of the optimization.
-
-    Returns
-    -------
-    alpha
-    f_count
-    f_val_at_alpha'''
+    
     xk = np.atleast_1d(xk)
     fc = [0]
 
@@ -39,7 +17,7 @@ def line_search_armijo(f, xk, pk, gfk, old_fval = None, args=(), c1=1e-4, alpha0
     if old_fval is None:
         phi0 = phi(0.)
     else:
-        phi0 = old_fval  # compute f(xk) -- done in past loop
+        phi0 = old_fval  # compute f(xk)
 
     derphi0 = np.dot(gfk, pk)
     alpha, phi1 = scalar_search_armijo(phi, phi0, derphi0, c1=c1,
@@ -57,7 +35,7 @@ def scalar_search_armijo(phi, phi0, derphi0, c1=1e-4, alpha0=1, amin=0):
     if (phi_a1 <= phi0 + c1*alpha1*derphi0):
         return alpha1, phi_a1
 
-    while alpha1 > amin:       # we are assuming alpha>0 is a descent direction
+    while alpha1 > amin:       # assume alpha > 0 is a descent direction
         factor = alpha0**2 * alpha1**2 * (alpha1-alpha0)
         a = alpha0**2 * (phi_a1 - phi0 - derphi0*alpha1) - \
             alpha1**2 * (phi_a0 - phi0 - derphi0*alpha0)
@@ -80,13 +58,9 @@ def scalar_search_armijo(phi, phi0, derphi0, c1=1e-4, alpha0=1, amin=0):
         phi_a0 = phi_a1
         phi_a1 = phi_a2
 
-    # Failed to find a suitable step length
     return None, phi_a1
 
-#------------------------------------------------------------------------------
 # Python Wolfe1 line and scalar searches
-#------------------------------------------------------------------------------
-
 def line_search_wolfe1(f, fprime, xk, pk, gfk=None,
                        old_fval=None, old_old_fval=None,
                        args=(), c1=1e-4, c2=0.9, amax=50, amin=1e-8,
@@ -99,10 +73,12 @@ def line_search_wolfe1(f, fprime, xk, pk, gfk=None,
     gc = [0]
     fc = [0]
 
+    # get the objective function value
     def phi(s):
         fc[0] += 1
         return f(xk + s*pk, *args)
 
+    # get gradient value
     def derphi(s):
         gval[0] = fprime(xk + s*pk, *args)
         gc[0] += 1
@@ -150,7 +126,6 @@ def scalar_search_wolfe1(phi, derphi, phi0=None, old_phi0=None, derphi0=None,
         else:
             break
     else:
-        # maxiter reached, the line search did not converge
         stp = None
 
     if task[:5] == b'ERROR' or task[:4] == b'WARN':
@@ -158,10 +133,7 @@ def scalar_search_wolfe1(phi, derphi, phi0=None, old_phi0=None, derphi0=None,
 
     return stp, phi1, phi0
 
-#------------------------------------------------------------------------------
 # Python line search using bracket minimum
-#------------------------------------------------------------------------------
-
 def bracket_minimum(f, x=0, s=1e-2, k=2.0):
     a, ya = x, f(x)
     b, yb = a + s, f(a + s)
